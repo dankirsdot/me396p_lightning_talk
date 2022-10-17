@@ -1,7 +1,7 @@
 #!/bin/bash
 
 GUI=${1:-"native"}
-IMAGE_NAME=${2:"me396p/ros:humble"}
+IMAGE_NAME="me396p/ros:humble"
 
 SRC_PATH=${PWD/container/src}
 
