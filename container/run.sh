@@ -25,7 +25,7 @@ if [ $GUI == "native" ]; then
     
     # build an image
     $CONTAINER_ENGINE build -t $IMAGE_NAME $CONTAINER_PATH \
-        --build-arg PARENT_IMAGE=$PARENT_IMAGE
+        --build-arg PARENT_IMAGE=$PARENT_IMAGE \
         --build-arg ROS_DISTRO=$ROS_DISTRO
 
     # run it
@@ -44,7 +44,7 @@ elif [ $GUI == "vnc" ]; then
     
     # build an image
     $CONTAINER_ENGINE build -t $IMAGE_NAME $CONTAINER_PATH \
-        --build-arg PARENT_IMAGE=$PARENT_IMAGE
+        --build-arg PARENT_IMAGE=$PARENT_IMAGE \
         --build-arg ROS_DISTRO=$ROS_DISTRO
     
     # run it
