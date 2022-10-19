@@ -1,9 +1,13 @@
 #!/bin/bash
 
 GUI=${1:-"native"}
-IMAGE_NAME="me396p/ros:humble"
 
-SRC_PATH=${PWD/container/src}
+ROS_DISTRO=humble
+IMAGE_NAME="me396p/ros:$ROS_DISTRO"
+
+SCRIPT_PATH=$(readlink -f $BASH_SOURCE)
+CONTAINER_PATH="${SCRIPT_PATH%/*}/"
+WORKSPACE_PATH=${SCRIPT_DIR/container/workspace}
 
 # check if docker or podman are available in the system
 if [ -x "$(command -v docker)" ]; then
@@ -16,8 +20,13 @@ else
 fi
 
 if [ $GUI == "native" ]; then
+    #set parent image
+    PARENT_IMAGE="docker.io/ros:$ROS_DISTRO"
+    
     # build an image
-    $CONTAINER_ENGINE build -t $IMAGE_NAME $PWD
+    $CONTAINER_ENGINE build -t $IMAGE_NAME $CONTAINER_PATH \
+        --build-arg PARENT_IMAGE=$PARENT_IMAGE
+        --build-arg ROS_DISTRO=$ROS_DISTRO
 
     # run it
     xhost +local:docker
@@ -27,15 +36,23 @@ if [ $GUI == "native" ]; then
                         --device /dev/dri/ \
                         -e DISPLAY=$DISPLAY \
                         -v $HOME/.Xauthority:/root/.Xauthority:ro \
-                        -v $SRC_PATH:/demo/src \
+                        -v $WORKSPACE_PATH:/workspace/src \
                         $IMAGE_NAME
 elif [ $GUI == "vnc" ]; then
-    # run ready container from Dockerhub
+    # set parent image
+    PARENT_IMAGE="docker.io/tiryoh/ros2-desktop-vnc:$ROS_DISTRO"
+    
+    # build an image
+    $CONTAINER_ENGINE build -t $IMAGE_NAME $CONTAINER_PATH \
+        --build-arg PARENT_IMAGE=$PARENT_IMAGE
+        --build-arg ROS_DISTRO=$ROS_DISTRO
+    
+    # run it
     $CONTAINER_ENGINE run -p 6080:80 \
                         --shm-size=512m \
                         --security-opt seccomp=unconfined \
-                        -v $SRC_PATH:/home/ubuntu/demo/src \
-                        docker.io/tiryoh/ros2-desktop-vnc:humble
+                        -v $WORKSPACE_PATH:/home/ubuntu/workspace/src \
+                        $IMAGE_NAME
 else
     echo "There is not such a GUI type!"
 fi
