@@ -7,7 +7,7 @@ IMAGE_NAME="me396p/ros:$ROS_DISTRO"
 
 SCRIPT_PATH=$(readlink -f $BASH_SOURCE)
 CONTAINER_PATH="${SCRIPT_PATH%/*}/"
-WORKSPACE_PATH=${SCRIPT_DIR/container/workspace}
+WORKSPACE_PATH=${CONTAINER_PATH/container/workspace}
 
 # check if docker or podman are available in the system
 if [ -x "$(command -v docker)" ]; then
