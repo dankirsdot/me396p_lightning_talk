@@ -7,7 +7,7 @@ IMAGE_NAME="me396p/ros:$ROS_DISTRO"
 
 SCRIPT_PATH=$(readlink -f $BASH_SOURCE)
 CONTAINER_PATH="${SCRIPT_PATH%/*}/"
-WORKSPACE_PATH=${CONTAINER_PATH/container/workspace}
+WORKSPACE_PATH=${CONTAINER_PATH/container/ros2_ws}
 
 # check if docker or podman are available in the system
 if [ -x "$(command -v docker)" ]; then
@@ -36,7 +36,7 @@ if [ $GUI == "native" ]; then
                         --device /dev/dri/ \
                         -e DISPLAY=$DISPLAY \
                         -v $HOME/.Xauthority:/root/.Xauthority:ro \
-                        -v $WORKSPACE_PATH:/workspace/src \
+                        -v $WORKSPACE_PATH:/ros2_ws \
                         $IMAGE_NAME
 elif [ $GUI == "vnc" ]; then
     # set parent image
@@ -51,7 +51,7 @@ elif [ $GUI == "vnc" ]; then
     $CONTAINER_ENGINE run -p 6080:80 \
                         --shm-size=512m \
                         --security-opt seccomp=unconfined \
-                        -v $WORKSPACE_PATH:/home/ubuntu/workspace/src \
+                        -v $WORKSPACE_PATH:/home/ubuntu/ros2_ws \
                         $IMAGE_NAME
 else
     echo "There is not such a GUI type!"
